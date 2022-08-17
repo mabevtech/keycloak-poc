@@ -30,3 +30,4 @@ sketch
 
 .projectile
 .dir-locals.el
+.env
