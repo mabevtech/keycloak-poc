@@ -1,0 +1,21 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.1
+    ports:
+      - '${KEYCLOAK_PORT}:8080'
+    env_file: .env
+    command: start-dev
+  client-backend:
+    image: marcel/keycloak-client-backend:1.0
+    ports:
+      - '${CLIENT_BACKEND_PORT}:80'
+    depends_on:
+      - keycloak
+  client:
+    image: node:16.16.0
+    ports:
+      - '${CLIENT_PORT}:8080'
+    volumes:
+      - ./client/src/:/home/node
+    depends_on:
+      - client-backend
