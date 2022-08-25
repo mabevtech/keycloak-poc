@@ -4,6 +4,8 @@ services:
     ports:
       - '${KEYCLOAK_PORT}:8080'
     env_file: .env
+    # Starting in development mode which enables on-the-fly theme updates,
+    # see https://www.keycloak.org/server/configuration.
     command: start-dev
   client-backend:
     image: keycloak-poc/keycloak-client-backend:1.0
