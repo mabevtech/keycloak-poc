@@ -7,6 +7,8 @@ services:
     # Starting in development mode which enables on-the-fly theme updates,
     # see https://www.keycloak.org/server/configuration.
     command: start-dev
+    volumes:
+      - ./libs/keycloak-themes/theme:/opt/keycloak/themes
   client-backend:
     image: keycloak-poc/keycloak-client-backend:1.0
     ports:
