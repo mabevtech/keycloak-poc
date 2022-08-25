@@ -6,7 +6,7 @@ services:
     env_file: .env
     command: start-dev
   client-backend:
-    image: marcel/keycloak-client-backend:1.0
+    image: keycloak-poc/keycloak-client-backend:1.0
     ports:
       - '${CLIENT_BACKEND_PORT}:80'
     depends_on:
