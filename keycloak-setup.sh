@@ -6,12 +6,13 @@
 # (1) Create a new realm
 # (2) Create a new user in the new realm
 # (3) Register a client in the new realm (we'll to this twice, for client and client_backend)
-
-# Adapted from https://stackoverflow.com/a/54110718
-# There's no /auth in keycloak URLs anymore
+# We'll also update the login theme of the new realm to ours
 
 # Load variables from env file
 export $(xargs <.env)
+
+# curl calls adapted from https://stackoverflow.com/a/54110718
+# there's no /auth in keycloak URLs anymore
 
 echo ""
 echo "## Getting access token for the admin user"
@@ -66,3 +67,13 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
      --data '{"protocol":"openid-connect","clientId":"'"$CLIENT_BACKEND_ID"'","publicClient":"'"$PUBLIC_CLIENT"'","authorizationServicesEnabled":false,"serviceAccountsEnabled":true,"implicitFlowEnabled":true,"directAccessGrantsEnabled":true,"standardFlowEnabled":true,"frontchannelLogout":true,"alwaysDisplayInConsole":false,"attributes":{"oauth2.device.authorization.grant.enabled":false,"oidc.ciba.grant.enabled":false}}'
+
+THEME=$(ls libs/keycloak-themes/theme | head -1)
+echo ""
+echo "## Setting theme" $THEME "in" $KEYCLOAK_REALM_NAME "login page"
+echo ""
+curl -v http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
+     -X 'PUT' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: bearer $TOKEN" \
+     --data '{"realm":"'"$KEYCLOAK_REALM_NAME"'","loginTheme":"'"$THEME"'"}'
