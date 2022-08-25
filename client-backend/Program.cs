@@ -1,3 +1,5 @@
+using AmbevTech.Keycloak.Client;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
+builder.Services.AddClientKeycloak();
 
 var app = builder.Build();
 
