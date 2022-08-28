@@ -10,6 +10,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
+
+// This register a type for Microsoft.Extensions.Caching.Memory.IMemoryCache
+// which is required to construct a AmbevTech.Keycloak.Client.CacheInMemory
+// which is used by AmbevTech.Keycloak.Client.AddClientKeycloak
+builder.Services.AddMemoryCache();
+
 builder.Services.AddClientKeycloak();
 
 var app = builder.Build();
