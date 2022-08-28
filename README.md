@@ -30,5 +30,17 @@ git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak
 git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes libs/keycloak-themes
 ```
 
-Build client-backend
+# Build client-backend (back-channel) image
+
+```shell
 docker build -t keycloak-poc/keycloak-client-backend:1.0 --file ClientBackend.Dockerfile .
+```
+
+
+# Run only the api
+
+```shell
+docker-compose up client-backend
+```
+
+Sending a GET request to the /token endpoint makes the api request a token to keycloak and return it
