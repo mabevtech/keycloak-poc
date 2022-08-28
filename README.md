@@ -4,6 +4,11 @@
 cp .env.development .env
 ```
 
+# Make all defined variables available to this and sub shells
+```shell
+export $(xargs <.env)
+```
+
 # Pull internal keycloak libs
 
 ## Clone `keycloak-dotnet-client` into libs/
