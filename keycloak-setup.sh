@@ -18,11 +18,11 @@ echo ""
 echo "## Getting access token for the admin user"
 echo ""
 TOKEN=$(
-    curl --data "username=${KEYCLOAK_ADMIN}&password=${KEYCLOAK_ADMIN_PASSWORD}&grant_type=password&client_id=admin-cli" \
-         http://localhost:$KEYCLOAK_PORT/realms/master/protocol/openid-connect/token |
-        # striping the token value from the returned json
-        sed 's/{"access_token":"//g' |
-        sed 's/".*//g'
+    curl http://localhost:$KEYCLOAK_PORT/realms/master/protocol/openid-connect/token \
+         -d "username=${KEYCLOAK_ADMIN}&password=${KEYCLOAK_ADMIN_PASSWORD}&grant_type=password&client_id=admin-cli" |
+         # striping the token value from the returned json
+         sed 's/{"access_token":"//g' |
+         sed 's/".*//g'
      )
 
 echo ""
@@ -35,20 +35,24 @@ echo $TOKEN
 echo ""
 echo "## Creating realm " $KEYCLOAK_REALM_NAME
 echo ""
-curl -v http://localhost:$KEYCLOAK_PORT/admin/realms \
+curl http://localhost:$KEYCLOAK_PORT/admin/realms \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
-     --data '{"realm":"'"$KEYCLOAK_REALM_NAME"'","enabled":"true"}'
+     -d '{"realm":"'"$KEYCLOAK_REALM_NAME"'","enabled":"true"}'
 
 # (2) Create a new user in the new realm
 
 echo ""
 echo "## Creating user" $KEYCLOAK_USER_UNAME "in" $KEYCLOAK_REALM_NAME
 echo ""
-curl -v http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
-     --data '{"username":"'"$KEYCLOAK_USER_UNAME"'","email":"'"$KEYCLOAK_USER_EMAIL"'","enabled":"true"}'
+     -d '{
+           "username": "'"$KEYCLOAK_USER_UNAME"'",
+           "email":    "'"$KEYCLOAK_USER_EMAIL"'",
+           "enabled":  true
+         }'
 
 # (3) Register a client in the new realm
 
@@ -63,30 +67,31 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
      -d '{
-           "protocol": "openid-connect",
-           "clientId": "'"$CLIENT_ID"'",
-           "secret": "'"$CLIENT_SECRET"'",
-           "publicClient": "'"$IS_PUBLIC_CLIENT"'",
+           "protocol":      "openid-connect",
+           "clientId":      "'"$CLIENT_ID"'",
+           "secret":        "'"$CLIENT_SECRET"'",
+           "publicClient":  "'"$IS_PUBLIC_CLIENT"'",
            "authorizationServicesEnabled": false,
-           "serviceAccountsEnabled": true,
-           "implicitFlowEnabled": true,
-           "directAccessGrantsEnabled": true,
-           "standardFlowEnabled": true,
-           "frontchannelLogout": true,
-           "alwaysDisplayInConsole": false,
+           "serviceAccountsEnabled":       true,
+           "implicitFlowEnabled":          true,
+           "directAccessGrantsEnabled":    true,
+           "standardFlowEnabled":          true,
+           "frontchannelLogout":           true,
+           "alwaysDisplayInConsole":       false,
            "attributes": {
              "oauth2.device.authorization.grant.enabled": false,
-             "oidc.ciba.grant.enabled": false
+             "oidc.ciba.grant.enabled":                   false
            }
          }'
 
+# Update theme of the new realm
 
 THEME=$(ls libs/keycloak-themes/theme | head -1)
 echo ""
 echo "## Setting theme" $THEME "in" $KEYCLOAK_REALM_NAME "login page"
 echo ""
-curl -v http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
      -X 'PUT' \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
-     --data '{"realm":"'"$KEYCLOAK_REALM_NAME"'","loginTheme":"'"$THEME"'"}'
+     -d '{"realm":"'"$KEYCLOAK_REALM_NAME"'","loginTheme":"'"$THEME"'"}'
