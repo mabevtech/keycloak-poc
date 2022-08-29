@@ -87,9 +87,18 @@ echo ""
 echo "## Registering client" $CLIENT_ID "in" $KEYCLOAK_REALM_NAME
 echo ""
 
-# Client set as confidential so it can request tokens by itself
-# using a secret (client credentials grant).
-IS_PUBLIC_CLIENT=false
+# If false, client is set as confidential, which means it has a secure
+# back-channel from which it can request tokens using a secret.
+# The "serviceAccountsEnabled" option can be set to true then, which
+# enables the client to request the tokens directly (using the Client credentials grant).
+# If true, client is set as public, which means it can't store a secret
+# safely, so it can't use it to request tokens directly with no user interaction,
+# but it can perform the Implicit Flow (and Auth. Code Flow) just fine.
+# See https://auth0.com/docs/get-started/applications/confidential-and-public-applications
+# The @react-keycloak/web library uses the Auth. Code Flow by default.
+# If the client is confidential it fails to authenticate the user,
+# as Keycloak rejects requests without a client secret.
+IS_PUBLIC_CLIENT=true
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
@@ -98,8 +107,8 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
            "clientId":      "'"$CLIENT_ID"'",
            "secret":        "'"$CLIENT_SECRET"'",
            "publicClient":  "'"$IS_PUBLIC_CLIENT"'",
+           "serviceAccountsEnabled":       false,
            "authorizationServicesEnabled": false,
-           "serviceAccountsEnabled":       true,
            "implicitFlowEnabled":          true,
            "directAccessGrantsEnabled":    true,
            "standardFlowEnabled":          true,
