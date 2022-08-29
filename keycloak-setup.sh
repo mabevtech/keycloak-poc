@@ -62,6 +62,25 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
            "enabled":  true
          }'
 
+# Set a password for the new user
+echo ""
+echo "## Setting password" $KEYCLOAK_USER_PWD "for user" $KEYCLOAK_USER_UNAME
+echo ""
+# Getting the id of the created user (it's the only one in the realm)
+USER_ID=$(
+    curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
+         -H "Authorization: bearer ${TOKEN}" |
+        # striping the id value from the returned json
+        sed 's/\[{"id":"//g' |
+        sed 's/".*//g'
+     )
+# Update its password
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_ID/reset-password \
+     -X 'PUT' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: bearer ${TOKEN}" \
+     -d '{"temporary":false,"type":"password","value":"'"$KEYCLOAK_USER_PWD"'"}'
+
 # (3) Register a client in the new realm
 
 echo ""
