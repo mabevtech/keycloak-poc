@@ -25,7 +25,22 @@ public class AuthController : ControllerBase
         _tokenManager = tokenManager;
     }
 
-    // Client credentials flow
+    // Standard flow (back-channel round trip)
+    [Route("auth")]
+    public Task Auth(
+        [FromQuery(Name = "auth_code")] string authCode,
+        [FromQuery(Name = "redirect_uri")] string redirectUri
+    )
+    {
+        var secret = _configuration["Keycloak:Secret"];
+        // send http request to keycloak
+        return Task.CompletedTask;
+    }
+
+    // Client credentials flow.
+    // Client should be confidential and have the this flow enabled for this to work.
+    // "Client authentication" and "Service account roles" are the respective options
+    // in the Keycloak UI.
     [Route("token")]
     public Task<string> GetToken()
     {
