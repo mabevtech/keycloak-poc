@@ -107,7 +107,8 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
            "alwaysDisplayInConsole":       false,
            "attributes": {
              "oauth2.device.authorization.grant.enabled": false,
-             "oidc.ciba.grant.enabled":                   false
+             "oidc.ciba.grant.enabled":                   false,
+             "post.logout.redirect.uris":                 "*"
            },
            "webOrigins": ["*"],
            "redirectUris": ["*"]
