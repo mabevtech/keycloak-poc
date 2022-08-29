@@ -6,7 +6,15 @@
 # (1) Create a new realm
 # (2) Create a new user in the new realm
 # (3) Register a client in the new realm
-# We'll also update the login theme of the new realm to ours
+
+# We'll also:
+#
+# - Update the login theme of the new realm to ours
+#
+# - Update the contentSecurityPolicy of the new realm
+#   to allow keycloak pages to be hosted inside iframes in the client app
+#   (see https://stackoverflow.com/a/60659696)
+#
 
 # Load variables from env file
 export $(xargs <.env)
@@ -97,3 +105,19 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
      -d '{"realm":"'"$KEYCLOAK_REALM_NAME"'","loginTheme":"'"$THEME"'"}'
+
+# Update Content Security Policy of the new realm
+
+echo ""
+echo "## Updating contentSecurityPolicy of" $KEYCLOAK_REALM_NAME
+echo ""
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
+     -X 'PUT' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: bearer $TOKEN" \
+     -d '{
+           "realm": "'"$KEYCLOAK_REALM_NAME"'",
+           "browserSecurityHeaders": {
+             "contentSecurityPolicy": "frame-src '"'self'"'; frame-ancestors '"'self'"' localhost:*; object-src '"'none'"';"
+           }
+         }'
