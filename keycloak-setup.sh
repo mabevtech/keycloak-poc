@@ -81,7 +81,9 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
            "attributes": {
              "oauth2.device.authorization.grant.enabled": false,
              "oidc.ciba.grant.enabled":                   false
-           }
+           },
+           "webOrigins": ["*"],
+           "redirectUris": ["*"]
          }'
 
 # Update theme of the new realm
