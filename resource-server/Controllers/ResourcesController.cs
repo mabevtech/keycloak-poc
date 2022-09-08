@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClientApi.Controllers;
+namespace ResourceServer.Controllers;
 
 [ApiController]
 public class ResourcesController : ControllerBase

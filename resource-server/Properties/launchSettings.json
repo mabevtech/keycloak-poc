@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "resource_server": {
+    "ResourceServer": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
