@@ -11,4 +11,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\libs\keycloak-dotnet-jwt\AmbevTech.Keycloak.JWT\AmbevTech.Keycloak.JWT.csproj" />
+  </ItemGroup>
+
 </Project>
