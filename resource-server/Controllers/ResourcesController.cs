@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ResourceServer.Controllers;
 
@@ -22,6 +23,7 @@ public class ResourcesController : ControllerBase
     }
 
     [HttpGet("contacts")]
+    [Authorize]
     public Task<HttpStatusCode> GetContacts()
     {
         return Task.FromResult(HttpStatusCode.NoContent);
