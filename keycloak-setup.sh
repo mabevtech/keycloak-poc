@@ -1,20 +1,18 @@
 #!/bin/bash
 
 # Following https://www.keycloak.org/getting-started/getting-started-docker#_login_to_the_admin_console
-# what we need:
+# we need to  create a realm (1), create a user (2), and register a client (3).
+# We'll do that and some extra stuff to make a working workflow:
+#
 # (0) Set admin credentials (this is done before running the keycloak container)
 # (1) Create a new realm
+#     (1.1) Update the theme of the new realm
+#     (1.2) Update the Content Security Policy of the new realm
 # (2) Create a new user in the new realm
+#     (2.1) Set a password for the new user
 # (3) Register a client in the new realm
-
-# We'll also:
-#
-# - Update the login theme of the new realm to ours
-#
-# - Update the contentSecurityPolicy of the new realm
-#   to allow keycloak pages to be hosted inside iframes in the client app
-#   (see https://stackoverflow.com/a/60659696)
-#
+#     (3.1) Create client role
+#     (3.2) Assign created role to user
 
 # Load variables from env file
 export $(xargs <.env)
@@ -48,6 +46,34 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms \
      -H "Authorization: bearer $TOKEN" \
      -d '{"realm":"'"$KEYCLOAK_REALM_NAME"'","enabled":"true"}'
 
+# (1.1) Update theme of the new realm
+
+THEME=$(ls libs/keycloak-themes/theme | head -1)
+echo ""
+echo "## Setting theme" $THEME "in" $KEYCLOAK_REALM_NAME "login page"
+echo ""
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
+     -X 'PUT' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: bearer $TOKEN" \
+     -d '{"realm":"'"$KEYCLOAK_REALM_NAME"'","loginTheme":"'"$THEME"'"}'
+
+# (1.2) Update Content Security Policy of the new realm
+
+echo ""
+echo "## Updating contentSecurityPolicy of" $KEYCLOAK_REALM_NAME
+echo ""
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
+     -X 'PUT' \
+     -H "Content-Type: application/json" \
+     -H "Authorization: bearer $TOKEN" \
+     -d '{
+           "realm": "'"$KEYCLOAK_REALM_NAME"'",
+           "browserSecurityHeaders": {
+             "contentSecurityPolicy": "frame-src '"'self'"'; frame-ancestors '"'self'"' localhost:*; object-src '"'none'"';"
+           }
+         }'
+
 # (2) Create a new user in the new realm
 
 echo ""
@@ -62,11 +88,12 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
            "enabled":  true
          }'
 
-# Set a password for the new user
+# (2.1) Set a password for the new user
+
 echo ""
 echo "## Setting password" $KEYCLOAK_USER_PWD "for user" $KEYCLOAK_USER_UNAME
 echo ""
-# Getting the id of the created user (it's the only one in the realm)
+# Get the id of the created user (it's the only one in the realm)
 USER_ID=$(
     curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
          -H "Authorization: bearer ${TOKEN}" |
@@ -74,6 +101,7 @@ USER_ID=$(
         sed 's/\[{"id":"//g' |
         sed 's/".*//g'
      )
+
 # Update its password
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_ID/reset-password \
      -X 'PUT' \
@@ -123,30 +151,42 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
            "redirectUris": ["*"]
          }'
 
-# Update theme of the new realm
+# (3.1) Create client role
 
-THEME=$(ls libs/keycloak-themes/theme | head -1)
-echo ""
-echo "## Setting theme" $THEME "in" $KEYCLOAK_REALM_NAME "login page"
-echo ""
-curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
-     -X 'PUT' \
+# Get the (internal) id of the created client
+CLIENT_GUID=$(
+    curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
+         -H "Authorization: bearer ${TOKEN}" |
+         grep -oP '"id":"[^"]+","clientId":"'"$CLIENT_ID"'"' |
+         sed 's/"id":"//g' |
+         sed 's/".*//g'
+       )
+
+# Create the role for the client
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients/$CLIENT_GUID/roles \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
-     -d '{"realm":"'"$KEYCLOAK_REALM_NAME"'","loginTheme":"'"$THEME"'"}'
+     -d '{"name":"'"$CLIENT_ROLE"'"}'
 
-# Update Content Security Policy of the new realm
+# (3.2) Assign created role to user
 
-echo ""
-echo "## Updating contentSecurityPolicy of" $KEYCLOAK_REALM_NAME
-echo ""
-curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
-     -X 'PUT' \
+# Get the id of the created role (it's the only one for the client)
+ROLE_GUID=$(
+    curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients/$CLIENT_GUID/roles \
+         -H "Authorization: bearer ${TOKEN}" |
+        # striping the id value from the returned json
+        sed 's/\[{"id":"//g' |
+        sed 's/".*//g'
+       )
+
+# Create a role mapping for the client role and user
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_ID/role-mappings/clients/$CLIENT_GUID \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
-     -d '{
-           "realm": "'"$KEYCLOAK_REALM_NAME"'",
-           "browserSecurityHeaders": {
-             "contentSecurityPolicy": "frame-src '"'self'"'; frame-ancestors '"'self'"' localhost:*; object-src '"'none'"';"
-           }
-         }'
+     -d '[{
+            "containerId": "'"$CLIENT_GUID"'",
+            "clientRole": true,
+            "composite": false,
+            "name": "'"$CLIENT_ROLE"'",
+            "id": "'"$ROLE_GUID"'"
+         }]'
