@@ -9,17 +9,14 @@ public class ResourcesController : ControllerBase
 {
     private readonly ILogger<ResourcesController> _logger;
     private readonly IConfiguration _configuration;
-    private readonly HttpClient _httpClient;
 
     public ResourcesController(
         ILogger<ResourcesController> logger,
-        IConfiguration configuration,
-        HttpClient httpClient
+        IConfiguration configuration
     )
     {
         _logger = logger;
         _configuration = configuration;
-        _httpClient = httpClient;
     }
 
     [HttpGet("contacts")]
