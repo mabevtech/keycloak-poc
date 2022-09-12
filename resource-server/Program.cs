@@ -11,6 +11,20 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddJwtKeycloak(builder.Configuration);
 
+var CORS_POLICY = "client_origin";
+builder.Services.AddCors(options => 
+    options.AddPolicy(
+        name: CORS_POLICY, 
+        policy => policy
+            .WithOrigins(
+                builder.Configuration["CLIENT_URL"],
+                "http://localhost:3000"
+                )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+    )
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,6 +35,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(CORS_POLICY);
 
 app.UseAuthorization();
 
