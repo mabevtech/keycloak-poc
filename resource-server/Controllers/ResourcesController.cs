@@ -23,9 +23,16 @@ public class ResourcesController : ControllerBase
     }
 
     [HttpGet("contacts")]
-    [Authorize]
-    public Task<HttpStatusCode> GetContacts()
+    [Authorize(Roles = "read_contacts")]
+    public Task<string[]> GetContacts()
     {
-        return Task.FromResult(HttpStatusCode.NoContent);
+        return Task.FromResult(new string[] { "alice@domain.com", "bob@domain.com", "foo@bar.com" });
+    }
+
+    [HttpGet("ping")]
+    [Authorize]
+    public Task<string> Ping()
+    {
+        return Task.FromResult("pong");
     }
 }
