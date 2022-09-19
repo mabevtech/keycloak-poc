@@ -127,6 +127,10 @@ echo ""
 # If the client is confidential it fails to authenticate the user,
 # as Keycloak rejects requests without a client secret.
 IS_PUBLIC_CLIENT=true
+
+# "IS_CONFIDENTIAL_CLIENT = !IS_PUBLIC_CLIENT"
+${IS_PUBLIC_CLIENT} == true && IS_CONFIDENTIAL_CLIENT=false || IS_CONFIDENTIAL_CLIENT=true
+
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
