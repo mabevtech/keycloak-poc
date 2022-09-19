@@ -5,6 +5,7 @@ import App from './App';
 import { BrowserRouter } from "react-router-dom";
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import Keycloak from 'keycloak-js'
+import { ApiAuthProvider } from './useApiAuth.js';
 
 const eventLogger = (event, error) => {
     console.log('onKeycloakEvent', event, error)
@@ -26,8 +27,10 @@ root.render(
     onEvent={eventLogger}
     onTokens={tokenLogger}
   >
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ApiAuthProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ApiAuthProvider>
   </ReactKeycloakProvider>
 );
