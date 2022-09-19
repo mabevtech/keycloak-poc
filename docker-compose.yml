@@ -22,11 +22,12 @@ services:
     depends_on:
       - keycloak
   client:
-    image: node:16.16.0
+    image: keycloak-poc/keycloak-client:1.0
     ports:
-      - '${CLIENT_PORT}:8080'
+      - '${CLIENT_PORT}:3000'
     env_file: .env
     volumes:
-      - ./client/src/:/home/node
+      - ./client:/app
     depends_on:
       - client-backend
+      - resource-server
