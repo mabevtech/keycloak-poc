@@ -135,7 +135,7 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
            "clientId":      "'"$CLIENT_ID"'",
            "secret":        "'"$CLIENT_SECRET"'",
            "publicClient":  "'"$IS_PUBLIC_CLIENT"'",
-           "serviceAccountsEnabled":       false,
+           "serviceAccountsEnabled":       "'"$IS_CONFIDENTIAL_CLIENT"'",
            "authorizationServicesEnabled": false,
            "implicitFlowEnabled":          true,
            "directAccessGrantsEnabled":    true,
