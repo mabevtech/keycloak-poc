@@ -12,9 +12,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddJwtKeycloak(builder.Configuration);
 
 var CORS_POLICY = "client_origin";
-builder.Services.AddCors(options => 
+builder.Services.AddCors(options =>
     options.AddPolicy(
-        name: CORS_POLICY, 
+        name: CORS_POLICY,
         policy => policy
             .WithOrigins(
                 builder.Configuration["CLIENT_URL"],
