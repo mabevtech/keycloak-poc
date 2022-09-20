@@ -16,13 +16,17 @@ These components are defined in a top-level docker-compose file:
  - **client-backend**: a .NET web API acting as the client's back channel
  - **client**: a react app the user interacts with
 
-\*See Flow section for updated details.
+\*See *Authorization Flow* section for updated details.
 
 ## Dependencies
 
-The react app uses the `@react-keycloak/web` package to interact with Keycloak, which uses the official [keycloak-js](https://www.keycloak.org/docs/latest/securing_apps/#_javascript_adapter) adapter under the hood. Requests to the resource-server are made with the `axios` package.
+The react app uses the `@react-keycloak/web` package to interact with Keycloak, which uses the official [keycloak-js](https://www.keycloak.org/docs/latest/securing_apps/#_javascript_adapter) adapter under the hood. Requests to the **client-backend** and **resource-server** are made with the `axios` package.
 
-The client-backend
+The **client-backend** relies on the `keycloak-dotnet-client` to make token requests to Keycloak.
+
+The **resource-server** relies on the `keycloak-dotnet-jwt` to validate and parse tokens issued by
+Keycloak.
+
 TODO dependencies
 
 ## Authorization Flow
@@ -32,8 +36,8 @@ The `keycloak-js` adapter performs the Authorization Code Flow [by default](http
 In the meantime, `keycloak-dotnet-client` provides a way to get tokens from keycloak using a Client Credentials Flow, where a secret is used to get tokens on behalf of the user.
 
 Thus, 2 authorization methods are provided in the app:
- - *User login*: authorization with Auth. Code flow, performed by **client** with no **client-backend** influence
- - *Api login*: authorization with Client Cred. flow, performed by **client-backend** when requested by the **client**
+ - *User login*: authorization with Authorization Code Flow, performed by **client** with no **client-backend** influence
+ - *Api login*: authorization with Client Credentials Flow, performed by **client-backend** when requested by the **client**
 
 Unfortunately, both authorization mechanisms can't be available in parallel without exposing the secret to the **client** (front-channel):
  - if the **client** is confidential, Keycloak expects a secret in the token endpoint, so the **client** can't authenticate the user after they typed their credentials
@@ -41,12 +45,63 @@ Unfortunately, both authorization mechanisms can't be available in parallel with
 
 > See [Confidential and Public Applications](https://auth0.com/docs/get-started/applications/confidential-and-public-applications) for more info about public/confidential clients.
 
-### TODO update client.
+### Changing default flow
 
+The default authorization method is *User login*. To use *Api login* instead, set variable `USE_API_AUTH=true` before running `./keycloak-setup.sh`. Note that if the script already ran for the running Keycloak instance, it will be necessary to remove and start keycloak again, running the script one more time.
+
+Remove running keycloak container:
+```shell
+docker-compose stop keycloak && docker-compose rm -f keycloak && docker-compose up keycloak
+```
+
+Setup keycloak with a confidential client:
+```shell
+USE_API_AUTH=true ./keycloak-setup.sh
+```
+
+## Tokens
+
+After successful authorization/authentication, the official adapter `keycloak-js` provides all tokens (Id Token, Access Token, Refresh Token), and our `keycloak-dotnet-client` provides the Access Token only. We only need the Access Token, which is in JWT format. Here's an excerpt of a (parsed) Access Token returned by Keycloak:
+
+```json
+{
+  ...
+  "realm_access": {
+    "roles": [
+      "default-roles-myrealm",
+      "offline_access",
+      "uma_authorization"
+    ]
+  },
+  "resource_access": {
+    "client_id_123": {
+      "roles": [
+        "read_contacts"
+      ]
+    },
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  },
+  ...
+}
+```
+
+The `resource_access` entry denotes which roles the user have for each client/resource. Under resource `account`, we can see the user has 3 roles, which are set by default when we create a user. But there's also a `read_contacts` role under the `client_id_123` client/resource, which was introduced by us when we created the client role in Keycloak and mapped it to the created user.
+
+When receiving a request with the access token, the **resource-server** validates the signature and a middleware (`AmbevTech.Keycloak.JWT.Entity.JwtKeycloakEvents`) parses and extracts from the token all the roles the user have for the client/resource the **resource-server** was configured with ("Keycloak:Resource"), and adds them as role claims in the [Identity Object](https://learn.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal.identity?view=net-6.0) of the context of the request.
+
+With this, the user will be authorized to any resource endpoint that specifies a role which Keycloak says they have. In our case, the user will have the role `read_contacts` and so it will be possible to retrieve data from the /contacts endpoint (which has the `[Authorize(Roles = "read_contacts")]` attribute).
+
+>See [Principal and Identity Objects](https://learn.microsoft.com/en-us/dotnet/standard/security/principal-and-identity-objects) for more details about Role-based authorization in .NET.
 
 # Setup
 
-## Load env
+## Load environment
 
 Create a copy of the *.env.development* file named *.env*:
 ```shell
@@ -113,46 +168,7 @@ After a while a react app will load in your browser. Nothing will be working as 
 
 It will create a realm, a user, a client, a client role, and assign it to the user, so they'll have access to the protected endpoint in the resource-server. Check the `.env` file for credentials and other variables.
 
-# While running
+## Tweaking
 
-- keycloak stuff can be customized with standard admin login
-- it is possible to update the frontend /client/src/
-- it is possible to customize the theme /libs/keycloak-themes/theme/ambevtech-b2c
+The client application can be tweaked on the fly by changing files under `./client/src`. Keycloak's login theme can also be updated on the fly by changing files in `./libs/keycloak-themes/theme/ambevtech-b2c`. To update Keycloak configuration (User/Client/Roles/etc) it is necessary to access the Keycloak URL and log in with admin credentials. Check the `.env` file for the credentials.
 
-# Keycloak stuff
-
-TODO Explain that resource=client.
-
-We are using only the access token. It is a JWT.
-In Keycloak a user can have different roles in different clients...
-
-Token example with client_id_123:
-
-```json
-{
-  ...
-  "realm_access": {
-    "roles": [
-      "default-roles-myrealm",
-      "offline_access",
-      "rolex",
-      "uma_authorization"
-    ]
-  },
-  "resource_access": {
-    "client_id_123": {
-      "roles": [
-        "read_contacts"
-      ]
-    },
-    "account": {
-      "roles": [
-        "manage-account",
-        "manage-account-links",
-        "view-profile"
-      ]
-    }
-  },
-  ...
-}
-```
