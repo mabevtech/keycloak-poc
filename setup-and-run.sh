@@ -1,13 +1,5 @@
 #!/bin/bash
 
-### Load environment
-
-# Create a copy of the *.env.development* file named *.env* (if non-existent yet):
-cp -n .env.development .env
-
-# Make all defined variables available to this and sub shells:
-export $(grep -v '^#' .env | xargs)
-
 # Clone internal projects
 source ./clone-libs.sh
 

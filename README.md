@@ -8,6 +8,18 @@ This repo is a Proof-of-Concept of authentication/authorization with Keycloak, u
 
 # Setup and run
 
+First, create the env file with the environment variables:
+```shell
+cp -n .env.development .env
+```
+
+You can open the `.env` file in your editor to tweak some variable if you want.
+
+Make all defined variables available to this and sub shells:
+```shell
+export $(grep -v '^#' .env | xargs)
+```
+
 Run the following script in the terminal:
 ```shell
 ./setup-and-run.sh
