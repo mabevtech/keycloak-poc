@@ -131,6 +131,8 @@ With this, the user will be authorized to any resource endpoint that specifies a
 
 ## Disclaimer
 
-TODO explaing this is for learning purposes only and should be used with caution. Things were configured with loose security and in an inefficient manner.
+This repository was made for learning purposes, and its usage should be limited to that.
 
-It is advisable NOT to copy and start from this POC as baseline, but rather start from scratch and use each xxxxx one by one, making sure it is done properly.
+Things are configured with loose security and in an inefficient manner to make it practical to run and test out stuff. Environment variables are being leaked to every service, container images are bloated due to shared build context, Keycloak is configured to accept any origin in the endpoints...
+
+It is advisable **NOT** to start a project aimed for production with this POC as baseline, but rather to start from scratch and use this as a reference, replicating things only when applicable.
