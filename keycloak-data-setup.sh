@@ -15,7 +15,7 @@
 #     (3.2) Assign created role to user
 
 # Load variables from env file
-export $(xargs <.env)
+export $(grep -v '^#' .env | xargs)
 
 # curl calls adapted from https://stackoverflow.com/a/54110718
 # there's no /auth in keycloak URLs anymore

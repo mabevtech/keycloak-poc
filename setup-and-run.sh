@@ -6,7 +6,7 @@
 cp -n .env.development .env
 
 # Make all defined variables available to this and sub shells:
-export $(xargs <.env) 2>/dev/null
+export $(grep -v '^#' .env | xargs)
 
 # Clone internal projects
 source ./clone-libs.sh
