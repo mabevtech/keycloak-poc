@@ -6,6 +6,21 @@ This repo is a Proof-of-Concept of authentication/authorization with Keycloak, u
 - Access to [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/) repos: some projects are cloned and referenced
 - a unix shell: startup scripts are provided in `.sh` format
 
+# Setup and run
+
+Run the following script in the terminal:
+```shell
+./setup-and-run.sh
+```
+
+And wait. At some point you'll be prompted to type a password to clone repositories from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/). You can get one in any repository like [this one](https://dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes) by clicking *Clone* > *Generate Git Credentials* > Copy password.
+
+After completion the browser should open with a running application. If not, open manually http://localhost:8080.
+
+## Tweaking
+
+The client application can be tweaked on the fly by changing files under `./client/src`. Keycloak's login theme can also be updated on the fly by changing files in `./libs/keycloak-themes/theme/ambevtech-b2c`. To update Keycloak configuration (User/Client/Roles/etc) it is necessary to login to Keycloak's admin console, check the `.env` file for Keycloak port and admin credentials.
+
 # Components
 
 We have a sample react app (**client**) that, with the help of a back-end* (**back-channel**), requests to keycloak (**authorization server**) to authenticate the user and get access to their roles, so it is possible to request protected resources (user contacts) to a **resource-server**.
@@ -27,7 +42,7 @@ The **client-backend** relies on the `keycloak-dotnet-client` to make token requ
 The **resource-server** relies on the `keycloak-dotnet-jwt` to validate and parse tokens issued by
 Keycloak.
 
-TODO dependencies
+We also are using `keycloak-themes` to configure a custom theme for the login page in Keycloak.
 
 ## Authorization Flow
 
@@ -39,7 +54,7 @@ Thus, 2 authorization methods are provided in the app:
  - *User login*: authorization with Authorization Code Flow, performed by **client** with no **client-backend** influence
  - *Api login*: authorization with Client Credentials Flow, performed by **client-backend** when requested by the **client**
 
-Unfortunately, both authorization mechanisms can't be available in parallel without exposing the secret to the **client** (front-channel):
+Unfortunately, both authorization mechanisms can't be available in parallel without exposing the secret to the **client** app (front-channel):
  - if the **client** is confidential, Keycloak expects a secret in the token endpoint, so the **client** can't authenticate the user after they typed their credentials
  - if the **client** is public, it can't use the client-credentials grant, so the **client-backend** can't call the token endpoint (at least with the default request done by AmbevTech.Keycloak.Client.Service.TokenManager) to authenticate
 
@@ -47,16 +62,13 @@ Unfortunately, both authorization mechanisms can't be available in parallel with
 
 ### Changing default flow
 
-The default authorization method is *User login*. To use *Api login* instead, set variable `USE_API_AUTH=true` before running `./keycloak-setup.sh`. Note that if the script already ran for the running Keycloak instance, it will be necessary to remove and start keycloak again, running the script one more time.
+The default authorization method is *User login*. To use *Api login* instead, you'll need to login to Keycloak's admin console and edit the created client, enabling "Client authentication" and the "Service accounts roles" flow. The admin credentials and client id are laid out in the `.env` file.
 
-Remove running keycloak container:
-```shell
-docker-compose stop keycloak && docker-compose rm -f keycloak && docker-compose up keycloak
-```
+Alternatively, you can kill the running Keycloak instance and set it up again with the variable `USE_API_AUTH=true`. You can also tweak any other Keycloak variable you want in the `.env` file to set it up with different sample data.
 
-Setup keycloak with a confidential client:
+Kill and recreate Keycloak container with new data and to use *Api login*:
 ```shell
-USE_API_AUTH=true ./keycloak-setup.sh
+USE_API_AUTH=true ./reset-keycloak.sh
 ```
 
 ## Tokens
@@ -101,58 +113,7 @@ With this, the user will be authorized to any resource endpoint that specifies a
 
 # Setup
 
-## Load environment
-
-Create a copy of the *.env.development* file named *.env*:
-```shell
-cp .env.development .env
-```
-
-Make all defined variables available to this and sub shells:
-```shell
-export $(xargs <.env)
-```
-
-## Pull keycloak projects from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/)
-
-Create a *libs/* directory:
-```shell
-mkdir libs
-```
-
-Clone `keycloak-dotnet-client` into *libs/*:
-```shell
-git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-client libs/keycloak-dotnet-client
-```
-
-Clone `keycloak-dotnet-jwt` into *libs/*:
-```shell
-git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-jwt libs/keycloak-dotnet-jwt
-```
-
-Clone `keycloak-themes` into *libs/*:
-```shell
-git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes libs/keycloak-themes
-```
-
-# Build images
-
-Build resource-server image:
-```shell
-docker build -t keycloak-poc/resource-server:1.0 --file ResourceServer.Dockerfile .
-```
-
-Build client-backend (back-channel) image:
-```shell
-docker build -t keycloak-poc/keycloak-client-backend:1.0 --file ClientBackend.Dockerfile .
-```
-
-Build client image:
-```shell
-docker build -t keycloak-poc/keycloak-client:1.0 --file Client.Dockerfile .
-```
-
-For keycloak we're using the standard image ([quay.io/keycloak/keycloak](https://quay.io/repository/keycloak/keycloak))).
+# TODO explain the steps briefly and that password will be prompted
 
 # Run
 
@@ -163,12 +124,13 @@ docker-compose up -d client
 After a while a react app will load in your browser. Nothing will be working as Keycloak are still empty at this point. Execute the following script to fill Keycloak with sample data:
 
 ```shell
-./keycloak-setup.sh
+./keycloak-data-setup.sh
 ```
 
 It will create a realm, a user, a client, a client role, and assign it to the user, so they'll have access to the protected endpoint in the resource-server. Check the `.env` file for credentials and other variables.
 
-## Tweaking
+## Disclaimer
 
-The client application can be tweaked on the fly by changing files under `./client/src`. Keycloak's login theme can also be updated on the fly by changing files in `./libs/keycloak-themes/theme/ambevtech-b2c`. To update Keycloak configuration (User/Client/Roles/etc) it is necessary to access the Keycloak URL and log in with admin credentials. Check the `.env` file for the credentials.
+TODO explaing this is for learning purposes only and should be used with caution. Things were configured with loose security and in an inefficient manner.
 
+It is advisable NOT to copy and start from this POC as baseline, but rather start from scratch and use each xxxxx one by one, making sure it is done properly.
