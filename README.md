@@ -8,7 +8,7 @@ This repo is a Proof-of-Concept of authentication/authorization with Keycloak, u
 
 # Setup and run
 
-First, create the env file with the environment variables:
+First, create the `.env` file from the versioned template:
 ```shell
 cp -n .env.development .env
 ```
@@ -27,11 +27,17 @@ Run the following script in the terminal:
 
 And wait. At some point you'll be prompted to type a password to clone repositories from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/). You can get one in any repository like [this one](https://dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes) by clicking *Clone* > *Generate Git Credentials* > Copy password.
 
-After completion the browser should open with a running application. If not, open manually http://localhost:8080.
+After finishing the browser should open with a running application. If not, open manually http://localhost:8080.
 
 ## Tweaking
 
-The client application can be tweaked on the fly by changing files under `./client/src`. Keycloak's login theme can also be updated on the fly by changing files in `./libs/keycloak-themes/theme/ambevtech-b2c`. To update Keycloak configuration (User/Client/Roles/etc) it is necessary to login to Keycloak's admin console, check the `.env` file for Keycloak port and admin credentials.
+The client application can be tweaked on the fly by changing files in the `client/src/` directory. This is possible due to the container been run with a volume mounted to that directory.
+
+Keycloak's login theme can also be updated on the fly by changing files in `libs/keycloak-themes/theme/ambevtech-b2c/`. This is possible due to starting Keycloak in development mode. See *Starting Keycloak* section [here](https://www.keycloak.org/server/configuration) for more details.
+
+Changes to the `resoure-server` or `client-backend` code need to be recompiled in a new image. You can do so by killing the respective container and running the respective build command in the `build-images.sh` script, and then starting the service again `docker-compose up <service>`. Alternatively, it is possible to kill the running service and debug it your IDE. Don't forget to run with the correct port and the needed environment variables set if you choose this route. Check the `.env` file for required variables and credentials.
+
+The Keycloak stuff (User, Roles, Realm, etc) can be updated in the admin console. Check the `.env` file for the Keycloak port and the admin credentials. It is also possible to update the environment variables and setup Keycloak again, see *Changing default flow* section.
 
 # Components
 
