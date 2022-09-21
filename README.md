@@ -123,24 +123,6 @@ With this, the user will be authorized to any resource endpoint that specifies a
 
 >See [Principal and Identity Objects](https://learn.microsoft.com/en-us/dotnet/standard/security/principal-and-identity-objects) for more details about Role-based authorization in .NET.
 
-# Setup
-
-# TODO explain the steps briefly and that password will be prompted
-
-# Run
-
-```shell
-docker-compose up -d client
-```
-
-After a while a react app will load in your browser. Nothing will be working as Keycloak are still empty at this point. Execute the following script to fill Keycloak with sample data:
-
-```shell
-./keycloak-data-setup.sh
-```
-
-It will create a realm, a user, a client, a client role, and assign it to the user, so they'll have access to the protected endpoint in the resource-server. Check the `.env` file for credentials and other variables.
-
 ## Disclaimer
 
 TODO explaing this is for learning purposes only and should be used with caution. Things were configured with loose security and in an inefficient manner.
