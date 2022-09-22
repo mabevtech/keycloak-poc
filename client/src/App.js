@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Link } from "react-router-dom";
 import { useKeycloak } from '@react-keycloak/web';
 import { useApiAuth } from './useApiAuth.js';
-import axios from 'axios';
+import api from './api.js';
 
 import './App.css';
 
@@ -66,26 +66,15 @@ function Contacts() {
   const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
     if (isAuthenticated) {
       const fetchContacts = async () => {
-        axios.get(
-          "http://localhost:8060/contacts",
-          { headers: { Authorization: `Bearer ${token}` } }
-        ).then(response => {
-          if (isMounted) {
-            setContacts(response.data);
-          }
-        }).catch(error => {
-          console.log(error);
-          if (isMounted) {
-            setFetchError(error.message);
-          }
-        });
+          await api.getContacts(token).then(setContacts).catch(error => {
+              setFetchError(error.message);
+              console.log(error.message);
+          });
       }
       fetchContacts();
     }
-    return () => isMounted = false;
   }, [isAuthenticated, token]);
 
   return (
