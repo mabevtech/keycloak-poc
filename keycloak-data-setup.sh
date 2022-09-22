@@ -121,8 +121,8 @@ echo ""
 # See Flow section in README for more details.
 IS_CONFIDENTIAL_CLIENT=${USE_API_AUTH}
 
-# "IS_CONFIDENTIAL_CLIENT = !IS_PUBLIC_CLIENT"
-${IS_PUBLIC_CLIENT} == true && IS_CONFIDENTIAL_CLIENT=false || IS_CONFIDENTIAL_CLIENT=true
+# "IS_PUBLIC_CLIENT = !IS_CONFIDENTIAL_CLIENT"
+${IS_CONFIDENTIAL_CLIENT} == true && IS_PUBLIC_CLIENT=false || IS_PUBLIC_CLIENT=true
 
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients \
      -H "Content-Type: application/json" \
