@@ -19,12 +19,13 @@ builder.Services.AddMemoryCache();
 builder.Services.AddClientKeycloak();
 
 var CORS_POLICY = "client_origin";
+var clientUrl = builder.Configuration["CLIENT_URL"];
 builder.Services.AddCors(options =>
     options.AddPolicy(
         name: CORS_POLICY,
         policy => policy
             .WithOrigins(
-                builder.Configuration["CLIENT_URL"],
+                clientUrl,
                 "http://localhost:3000"
                 )
             .AllowAnyMethod()
