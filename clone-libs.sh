@@ -5,11 +5,20 @@
 # Create a *libs/* directory if non-existent:
 ls libs || mkdir libs
 
-# Clone `keycloak-dotnet-client` into *libs/*:
-git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-client libs/keycloak-dotnet-client
+# Clone `keycloak-dotnet-client` into *libs/* it not cloned yet:
+ls libs/keycloak-dotnet-client || \
+    git clone \
+        https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-client \
+        libs/keycloak-dotnet-client
 
-# Clone `keycloak-dotnet-jwt` into *libs/*:
-git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-jwt libs/keycloak-dotnet-jwt
+# Clone `keycloak-dotnet-jwt` into *libs/* if not cloned yet:
+ls libs/keycloak-dotnet-jwt || \
+    git clone \
+        https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-jwt \
+        libs/keycloak-dotnet-jwt
 
-# Clone `keycloak-themes` into *libs/*:
-git clone https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes libs/keycloak-themes
+# Clone `keycloak-themes` into *libs/* if not cloned yet:
+ls libs/keycloak-themes || \
+    git clone \
+        https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes \
+        libs/keycloak-themes
