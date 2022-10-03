@@ -13,7 +13,7 @@ First, create the `.env` file from the versioned template:
 cp -n .env.development .env
 ```
 
-You can open the `.env` file in your editor to tweak some variable if you want.
+You can open the `.env` file in your editor to tweak some variables if you want.
 
 Make all defined variables available to this and sub shells:
 ```shell
@@ -130,10 +130,10 @@ With this, the user will be authorized to any resource endpoint that specifies a
 
 >See [Principal and Identity Objects](https://learn.microsoft.com/en-us/dotnet/standard/security/principal-and-identity-objects) for more details about Role-based authorization in .NET.
 
-## Disclaimer
+# Disclaimer
 
 This repository was made for learning purposes, and its usage should be limited to that.
 
-Things are configured with loose security and in an inefficient manner to make it practical to run and test out stuff. Environment variables are being leaked to every service, container images are bloated due to shared build context, Keycloak is configured to accept any origin in the endpoints...
+Things are configured with loose security and in an inefficient manner to make it practical to run and test out stuff. Environment variables are being leaked to every service, container images are bloated due to shared build context, Keycloak is configured to accept any origin in the endpoints, etc.
 
 It is advisable **NOT** to start a project aimed for production with this POC as baseline, but rather to start from scratch and use this as a reference, replicating things only when applicable.
