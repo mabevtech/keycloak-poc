@@ -1,6 +1,9 @@
+using System;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using AmbevTech.Keycloak.Client;
+using AmbevTech.Keycloak.Client.Entities;
 
 namespace ClientApi.Controllers;
 
@@ -11,18 +14,21 @@ public class AuthController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
     private readonly ITokenManager _tokenManager;
+    private readonly IMemoryCache _cache;
 
     public AuthController(
         ILogger<AuthController> logger,
         IConfiguration configuration,
         HttpClient httpClient,
-        ITokenManager tokenManager
+        ITokenManager tokenManager,
+        IMemoryCache cache
     )
     {
         _logger = logger;
         _configuration = configuration;
         _httpClient = httpClient;
         _tokenManager = tokenManager;
+        _cache = cache;
     }
 
     // Standard flow (back-channel round trip)
@@ -48,5 +54,14 @@ public class AuthController : ControllerBase
         var result = await _tokenManager.GetToken();
         return result;
     }
+
+    [Route("logout")]
+    public Task Logout()
+    {
+        var clientId = _configuration["Keycloak:Resource"];
+        var key = $"{SsoConstants.PrefixAuth}{clientId}";
+        _cache.Remove(key);
+
+        return Task.CompletedTask;
     }
 }
