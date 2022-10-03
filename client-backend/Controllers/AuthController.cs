@@ -26,7 +26,8 @@ public class AuthController : ControllerBase
     }
 
     // Standard flow (back-channel round trip)
-    // This is not working, see "Flow" section in README
+    // Couldn't make this to work,
+    // see "Authorization Flow" section in README for details.
     [Route("auth")]
     public Task Auth(
         [FromQuery(Name = "state")] string state,
@@ -39,13 +40,13 @@ public class AuthController : ControllerBase
         return Task.CompletedTask;
     }
 
-    // Client credentials flow.
-    // Client should be confidential and have this flow enabled for this to work.
-    // "Client authentication" and "Service account roles" are the respective toggles
-    // in the Keycloak UI.
+    // Client credentials flow ("Api login").
+    // See "Authorization Flow" section in README for details.
     [Route("token")]
-    public Task<string> GetToken()
+    public async Task<string> GetToken()
     {
-        return _tokenManager.GetToken();
+        var result = await _tokenManager.GetToken();
+        return result;
+    }
     }
 }
