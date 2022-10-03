@@ -7,5 +7,5 @@ export default {
     return result.data;
   },
   getTokens: async () => (await axios.get('http://localhost:8070/token')).data,
-  logout: async () => axios.get('http://localhost:8070/logout')
+  logout: async () => axios.post('http://localhost:8070/logout')
 }
