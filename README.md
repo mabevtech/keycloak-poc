@@ -80,7 +80,7 @@ Unfortunately, both authorization mechanisms can't be available in parallel with
 
 ### Changing default flow
 
-The default authorization method is *User login*. To use *Api login* instead, you'll need to login to Keycloak's admin console and edit the created client, enabling "Client authentication" and the "Service accounts roles" flow. The admin credentials and client id are laid out in the `.env` file.
+The default authorization method is *User login*. To use *Api login* instead, you'll need to login to Keycloak's admin console and edit the created client, enabling "Client authentication" and the "Service accounts roles" flow. You'll also need to assign the created role in the "Service accounts role" tab. The admin credentials and the client id and role are laid out in the `.env` file.
 
 Alternatively, you can kill the running Keycloak instance and set it up again with the variable `USE_API_AUTH=true`. You can also tweak any other Keycloak variable you want in the `.env` file to set it up with different sample data.
 

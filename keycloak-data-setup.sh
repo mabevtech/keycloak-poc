@@ -12,7 +12,11 @@
 #     (2.1) Set a password for the new user
 # (3) Register a client in the new realm
 #     (3.1) Create client role
-#     (3.2) Assign created role to user
+#     (3.2) Assign created role to user*
+#
+# * Note that if using API login (client-credentials grant),
+#   we ignore the created user and assign the role to the
+#   default service-accounts user of the client.
 
 # curl calls adapted from https://stackoverflow.com/a/54110718
 # there's no /auth in keycloak URLs anymore
@@ -175,6 +179,16 @@ ROLE_GUID=$(
         sed 's/\[{"id":"//g' |
         sed 's/".*//g'
        )
+
+# If using API authorization, fetch the id of, and use the default service-account user
+${USE_API_AUTH} == true && \
+    USER_ID=$(
+        curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients/$CLIENT_GUID/service-account-user \
+             -H "Authorization: bearer ${TOKEN}" |
+            # striping the id value from the returned json
+            sed 's/{"id":"//g' |
+            sed 's/".*//g'
+           )
 
 # Create a role mapping for the client role and user
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_ID/role-mappings/clients/$CLIENT_GUID \
