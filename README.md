@@ -86,8 +86,9 @@ Alternatively, you can kill the running Keycloak instance and set it up again wi
 
 Kill and recreate Keycloak container with new data and to use *Api login*:
 ```shell
-USE_API_AUTH=true ./reset-keycloak.sh
+export USE_API_AUTH=true; ./reset-keycloak.sh
 ```
+
 
 ## Tokens
 
