@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Following https://www.keycloak.org/getting-started/getting-started-docker#_login_to_the_admin_console
 # we need to  create a realm (1), create a user (2), and register a client (3).

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ### Pull keycloak projects from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/)
 

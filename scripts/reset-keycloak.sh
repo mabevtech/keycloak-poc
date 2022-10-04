@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ## Kill and recreate the Keycloak container
 docker-compose rm -sf keycloak && docker-compose up -d keycloak
