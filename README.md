@@ -153,6 +153,12 @@ Most commonly you'll be reading variables from the configuration files (e.g. `ap
 
 The exception is the client, in which we are still using a `config.json` file that should be kept in sync with `.env`. This is due to a [bug](https://github.com/facebook/create-react-app/issues/11773) in Creat React App that keep us from reading the environment.
 
+## .NET APIs sharing hosts' *localhost*
+
+As the *localhost* address is not the same in the host machine and within each container, we can run into problems using *localhost* URLs for service-to-service communication. One instance of this problem is the `resource-server` not being able to fetch authorization [metadata](http://localhost:8000/realms/myrealm/.well-known/openid-configuration) from Keycloak before starting to validate tokens.
+
+We are circumventing this by making the *localhost* address point to the hosts' in the .NET APIs (see `extra_hosts` entries in the `docker-compose` file). This is hacky but the simplest considered alternative (see commit [57f75b253a](https://github.com/mabevtech/keycloak-poc/commit/57f75b253ac9bd5d802740ebc5ba256cdd76ae6a) for more details).
+
 # Disclaimer
 
 This repository was made for learning purposes, and its usage should be limited to that.
