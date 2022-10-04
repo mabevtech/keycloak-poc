@@ -1,0 +1,11 @@
+{
+    "url": {
+        "api": "http://localhost:8070",
+        "resourceServer": "http://localhost:8060"
+    },
+    "keycloak": {
+        "clientId": "client_id",
+        "realm": "myrealm",
+        "url": "http://localhost:8000"
+    }
+}

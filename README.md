@@ -89,7 +89,6 @@ Kill and recreate Keycloak container with new data and to use *Api login*:
 export USE_API_AUTH=true; ./reset-keycloak.sh
 ```
 
-
 ## Tokens
 
 After successful authorization/authentication, the official adapter `keycloak-js` provides all tokens (Id Token, Access Token, Refresh Token), and our `keycloak-dotnet-client` provides the Access Token only. We only need the Access Token, which is in JWT format. Here's an excerpt of a (parsed) Access Token returned by Keycloak:
@@ -129,6 +128,14 @@ When receiving a request with the access token, the **resource-server** validate
 With this, the user will be authorized to any resource endpoint that specifies a role which Keycloak says they have. In our case, the user will have the role `read_contacts` and so it will be possible to retrieve data from the /contacts endpoint (which has the `[Authorize(Roles = "read_contacts")]` attribute).
 
 >See [Principal and Identity Objects](https://learn.microsoft.com/en-us/dotnet/standard/security/principal-and-identity-objects) for more details about Role-based authorization in .NET.
+
+# Other stuff worth mentioning
+
+## Environment variables
+
+Most commonly you'll be reading variables from the configuration files (e.g. `appsettings.json`, `config.json`). Here, for simplicity's sake, we're grouping and reading everything from a top level `.env` file.
+
+The exception is the client, in which we are still using a `config.json` file that should be kept in sync with `.env`. This is due to a [bug](https://github.com/facebook/create-react-app/issues/11773) in Creat React App that keep us from reading the environment.
 
 # Disclaimer
 

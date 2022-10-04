@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import Keycloak from 'keycloak-js'
 import { ApiAuthProvider } from './useApiAuth.js';
+import config from './config.json';
 
 const eventLogger = (event, error) => {
     console.log('onKeycloakEvent', event, error)
@@ -19,9 +20,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ReactKeycloakProvider
     authClient={new Keycloak({
-        url: "http://localhost:8000/",
-        realm: "myrealm",
-        clientId: "client_id",
+        url: config.keycloak.url,
+        realm: config.keycloak.realm,
+        clientId: config.keycloak.clientId,
         checkLoginIframe: false
     })}
     onEvent={eventLogger}
