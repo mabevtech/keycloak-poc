@@ -95,7 +95,7 @@ echo ""
 echo "## Setting password" $KEYCLOAK_USER_PWD "for user" $KEYCLOAK_USER_UNAME
 echo ""
 # Get the id of the created user (it's the only one in the realm)
-USER_ID=$(
+USER_GUID=$(
     curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
          -H "Authorization: bearer ${TOKEN}" |
         # striping the id value from the returned json
@@ -104,7 +104,7 @@ USER_ID=$(
      )
 
 # Update its password
-curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_ID/reset-password \
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_GUID/reset-password \
      -X 'PUT' \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
@@ -182,7 +182,7 @@ ROLE_GUID=$(
 
 # If using API authorization, fetch the id of, and use the default service-account user
 ${USE_API_AUTH} == true && \
-    USER_ID=$(
+    USER_GUID=$(
         curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/clients/$CLIENT_GUID/service-account-user \
              -H "Authorization: bearer ${TOKEN}" |
             # striping the id value from the returned json
@@ -191,7 +191,7 @@ ${USE_API_AUTH} == true && \
            )
 
 # Create a role mapping for the client role and user
-curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_ID/role-mappings/clients/$CLIENT_GUID \
+curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$USER_GUID/role-mappings/clients/$CLIENT_GUID \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
      -d '[{
