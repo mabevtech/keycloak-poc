@@ -35,7 +35,7 @@ The client application can be tweaked on the fly by changing files in the `clien
 
 Keycloak's login theme can also be updated on the fly by changing files in `libs/keycloak-themes/theme/ambevtech-b2c/`. This is possible due to starting Keycloak in development mode. See *Starting Keycloak* section [here](https://www.keycloak.org/server/configuration) for more details.
 
-Changes to the `resoure-server` or `client-backend` code need to be recompiled in a new image. You can do so by killing the respective container and running the respective build command in the `build-images.sh` script, and then starting the service again `docker-compose up <service>`. Alternatively, it is possible to kill the running service and debug it your IDE. Don't forget to run with the correct port and the needed environment variables set if you choose this route. Check the `.env` file for required variables and credentials.
+Changes to the `resoure-server` or `client-backend` code need to be recompiled in a new image. You can do so by killing the respective container and running the respective build command present in the `build-images.sh` script, and then starting the service again `docker-compose up -d <service>`. Alternatively, it is possible to kill the running service and debug it with your IDE. Don't forget to run in the correct port and with the needed environment variables set if you choose this route. Check out the `.env` file for required variables and credentials.
 
 The Keycloak stuff (User, Roles, Realm, etc) can be updated in the admin console. Check the `.env` file for the Keycloak port and the admin credentials. It is also possible to update the environment variables and setup Keycloak again, see *Changing default flow* section.
 
