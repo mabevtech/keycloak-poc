@@ -39,6 +39,22 @@ Changes to the `resoure-server` or `client-backend` code need to be recompiled i
 
 The Keycloak stuff (User, Roles, Realm, etc) can be updated in the admin console. Check the `.env` file for the Keycloak port and the admin credentials. It is also possible to update the environment variables and setup Keycloak again, see *Changing default flow* section.
 
+## Stopping
+
+The standard `docker-compose` [commands](https://docs.docker.com/engine/reference/commandline/compose/#child-commands) apply.
+
+To stop and remove everything:
+
+```shell
+docker-compose down
+```
+
+To stop and remove a single service (check `docker-compose.yml` for service names):
+
+```shell
+docker-compose rm -sf <service>
+```
+
 # Components
 
 We have a sample react app (**client**) that, with the help of a back-end* (**back-channel**), requests to keycloak (**authorization server**) to authenticate the user and get access to their roles, so it is possible to request protected resources (user contacts) to a **resource-server**.
