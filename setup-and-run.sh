@@ -25,4 +25,4 @@ while ! curl --fail --silent --head http://localhost:${CLIENT_PORT}; do
 done
 
 # Open client in browser
-# cmd.exe /C start http://localhost:${KEYCLOAK_CLIENT_PORT}
+cmd.exe /C start http://localhost:${KEYCLOAK_CLIENT_PORT}
