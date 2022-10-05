@@ -25,9 +25,9 @@ Run the following [script](scripts/setup-and-run.sh) in the terminal:
 ./scripts/setup-and-run.sh
 ```
 
-And wait. At some point you'll be prompted to type a password to clone repositories from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/). You can get one in any repository like [this one](https://dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes) by clicking *Clone* > *Generate Git Credentials* > Copy password.
+You'll be prompted to type a password 3 times to clone repositories from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/). You can get a password in any repository like [this one](https://dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes) by clicking *Clone* > *Generate Git Credentials* > Copy password.
 
-After finishing the browser should open with a running application. If not, open manually http://localhost:8080.
+Now wait. Building some docker images can take up to some minutes. After finishing the browser should open with a running application. If not, open manually http://localhost:8080.
 
 ## Tweaking
 
