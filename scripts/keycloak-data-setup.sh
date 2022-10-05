@@ -43,7 +43,7 @@ echo $TOKEN
 # (1) Create a new realm
 
 echo ""
-echo "## Creating realm " $KEYCLOAK_REALM_NAME
+echo "## Creating realm" $KEYCLOAK_REALM_NAME
 echo ""
 curl http://localhost:$KEYCLOAK_PORT/admin/realms \
      -H "Content-Type: application/json" \
