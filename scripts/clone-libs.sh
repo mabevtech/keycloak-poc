@@ -25,3 +25,8 @@ ls libs/keycloak-themes || \
     git clone \
         https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes \
         libs/keycloak-themes
+
+# Remove solution files as we're not using them
+# and they can cause problems during build:
+# https://github.com/dotnet/sdk/issues/2902
+find | grep .sln | xargs rm
