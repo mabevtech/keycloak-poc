@@ -21,6 +21,9 @@
 # curl calls adapted from https://stackoverflow.com/a/54110718
 # there's no /auth in keycloak URLs anymore
 
+# Make sure we are in project root
+cd $(dirname $0)/..
+
 echo ""
 echo "## Getting access token for the admin user"
 echo ""

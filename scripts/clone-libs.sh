@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Make sure we are in project root
+cd $(dirname $0)/..
+
 ### Pull keycloak projects from [AMBEV-SA/Plataforma-comum](https://AMBEV-SA@dev.azure.com/AMBEV-SA/Plataforma-comum/)
 
 # Create a *libs/* directory if non-existent:

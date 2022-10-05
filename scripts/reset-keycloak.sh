@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Make sure we are in project root
+cd $(dirname $0)/..
+
 ## Kill and recreate the Keycloak container
 docker-compose rm -sf keycloak && docker-compose up -d keycloak
 
@@ -10,4 +13,5 @@ while ! curl --fail --silent --head http://localhost:${KEYCLOAK_PORT}; do
 done
 
 # Feed data
-./keycloak-data-setup.sh
+./scripts/keycloak-data-setup.sh
+
