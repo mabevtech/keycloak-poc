@@ -77,6 +77,10 @@ The **resource-server** relies on the [keycloak-dotnet-jwt](https://dev.azure.co
 
 We also are using [keycloak-themes](https://dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-themes) to configure a custom theme for the login page in Keycloak.
 
+Here's a stratch diagram of these components and their dependencies:
+
+![Components](deps-diagram.jpg "Components")
+
 ## Authorization Flow
 
 The *keycloak-js* adapter performs the Authorization Code Flow [by default](https://github.com/keycloak/keycloak-documentation/blob/main/securing_apps/topics/oidc/javascript-adapter.adoc#implicit-and-hybrid-flow), where the authorization endpoint returns an authorization code first, and then it is exchanged with the tokens themselves in another round-trip. This all is done by the adapter in browser-land. Originally it was intended to use this flow but using the **client-backend** for the second round-trip (code for tokens exchange), but I didn't figure out a simple way to do so with the official adapter.
