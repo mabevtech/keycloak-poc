@@ -55,9 +55,13 @@ public class AuthController : ControllerBase
         return result;
     }
 
+    // Currently we're only really logging out,
+    // just removing token from the cache.
     [Route("logout")]
     public Task Logout()
     {
+        // TODO Call the logout endpoint at Keycloak
+
         var clientId = _configuration["Keycloak:Resource"];
         var key = $"{SsoConstants.PrefixAuth}{clientId}";
         _cache.Remove(key);
