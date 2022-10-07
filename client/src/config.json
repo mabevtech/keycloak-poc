@@ -4,7 +4,7 @@
         "resourceServer": "http://localhost:8060"
     },
     "keycloak": {
-        "clientId": "client_id",
+        "clientId": "client_id_123",
         "realm": "myrealm",
         "url": "http://localhost:8000"
     }
