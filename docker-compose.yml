@@ -32,7 +32,7 @@ services:
       - '${CLIENT_PORT}:3000'
     env_file: .env
     volumes:
-      - ./client:/app
+      - ./client/src:/app/src
     depends_on:
       - client-backend
       - resource-server
