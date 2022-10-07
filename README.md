@@ -29,6 +29,8 @@ You'll be prompted to type a password 3 times to clone repositories from [AMBEV-
 
 Now wait. Building some docker images can take up to some minutes. After finishing the browser should open with a running application. If not, open manually http://localhost:8080.
 
+If you encounter any errors, the script will probably be stuck at "Waiting for <some service> to be ready". Try stopping and running it again if that's the case.
+
 ## Tweaking
 
 The client application can be tweaked on the fly by changing files in the [client/src/](client/src/) directory. This is possible due to the container been run with a volume mounted to that directory.
