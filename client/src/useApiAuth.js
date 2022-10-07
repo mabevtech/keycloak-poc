@@ -26,7 +26,7 @@ function useApiAuthProvider() {
   const isAuthenticated = !!token;
 
   const login = async () => api.getTokens().then(setToken).catch(console.log);
-  const logout = async () => api.getTokens().then(setToken).catch(console.log);
+  const logout = async () => api.logout().then(removeToken).catch(console.log);
 
   return {
     login,
