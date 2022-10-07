@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from "react-router-dom";
 import { ReactKeycloakProvider } from '@react-keycloak/web'
+import { CookiesProvider } from 'react-cookie';
 import Keycloak from 'keycloak-js'
 import { ApiAuthProvider } from './useApiAuth.js';
 import config from './config.json';
@@ -29,9 +30,11 @@ root.render(
     onTokens={tokenLogger}
   >
     <ApiAuthProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <CookiesProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </CookiesProvider>
     </ApiAuthProvider>
   </ReactKeycloakProvider>
 );
