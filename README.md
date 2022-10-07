@@ -29,7 +29,7 @@ You'll be prompted to type a password 3 times to clone repositories from [AMBEV-
 
 Now wait. Building some docker images can take up to some minutes. After finishing the browser should open with a running application. If not, open manually http://localhost:8080.
 
-If you encounter any errors, the script will probably be stuck at "Waiting for <some service> to be ready". Try stopping and running it again if that's the case.
+If you encounter any errors, the script will probably be stuck at "Waiting for \<some service\> to be ready". Try stopping and running it again if that's the case.
 
 ## Tweaking
 
@@ -37,7 +37,7 @@ The client application can be tweaked on the fly by changing files in the [clien
 
 Keycloak's login theme can also be updated on the fly by changing files in [libs/keycloak-themes/theme/ambevtech-b2c/](libs/keycloak-themes/theme/ambevtech-b2c/). This also is done by mounting Keycloak's theme directory (*/opt/keycloak/themes*) to that directory, but also by starting Keycloak in development mode (see *Starting Keycloak* section [here](https://www.keycloak.org/server/configuration) for details).
 
-Changes to the `resoure-server` or `client-backend` code need to be recompiled in a new image. You can do so by killing the respective container and running the respective build command present in the [build-images.sh](scripts/build-images.sh) script, and then starting the service again `docker-compose up -d <service>`. Alternatively, it is possible to kill the running service and debug it with your IDE. Don't forget to run in the correct port and with the needed environment variables set if you choose this route. Check out the [.env](.env) file for required variables and credentials.
+Changes to the `resource-server` or `client-backend` code need to be recompiled in a new image. You can do so by killing the respective container and running the respective build command present in the [build-images.sh](scripts/build-images.sh) script, and then starting the service again `docker-compose up -d <service>`. Alternatively, it is possible to kill the running service and debug it with your IDE. Don't forget to run in the correct port and with the needed environment variables set if you choose this route. Check out the [.env](.env) file for required variables and credentials.
 
 The Keycloak stuff (User, Roles, Realm, etc) can be updated in the admin console. Check the [.env](.env) file for the Keycloak port and the admin credentials. It is also possible to update the environment variables and setup Keycloak again, see [Changing default flow](#changing-default-flow) section.
 
@@ -144,7 +144,7 @@ The `resource_access` entry denotes which roles the user have for each client/re
 
 When receiving a request with the access token, the **resource-server** validates the signature and a middleware ([AmbevTech.Keycloak.JWT.Entity.JwtKeycloakEvents](https://dev.azure.com/AMBEV-SA/Plataforma-comum/_git/keycloak-dotnet-jwt?path=/AmbevTech.Keycloak.JWT/Model/JwtKeycloakEvents.cs)) parses and extracts from the token all the roles the user have for the client/resource the **resource-server** was configured with ("Keycloak:Resource"), and adds them as role claims in the [Identity Object](https://learn.microsoft.com/en-us/dotnet/api/system.security.claims.claimsprincipal.identity?view=net-6.0) of the context of the request.
 
-With this, the user will be authorized to any resource endpoint that specifies a role which Keycloak says they have. In our case, the user will have the role *read_contacts* and so it will be possible to retrieve data from the `/contacts` [endpoint](/home/marcel/repos/keycloak-poc/resource-server/Controllers/ResourcesController.cs) (which has the `[Authorize(Roles = "read_contacts")]` attribute).
+With this, the user will be authorized to any resource endpoint that specifies a role which Keycloak says they have. In our case, the user will have the role *read_contacts* and so it will be possible to retrieve data from the `/contacts` [endpoint](resource-server/Controllers/ResourcesController.cs) (which has the `[Authorize(Roles = "read_contacts")]` attribute).
 
 >See [Principal and Identity Objects](https://learn.microsoft.com/en-us/dotnet/standard/security/principal-and-identity-objects) for more details about Role-based authorization in .NET.
 
@@ -160,7 +160,7 @@ The exception is the client, in which we are still using a [config.json](client/
 
 As the *localhost* address is not the same in the host machine and within each container, we can run into problems using *localhost* URLs for service-to-service communication. One instance of this problem is the `resource-server` not being able to fetch authorization [metadata](http://localhost:8000/realms/myrealm/.well-known/openid-configuration) from Keycloak before starting to validate tokens.
 
-We are circumventing this by making the *localhost* address point to the hosts' in the .NET APIs (note the `extra_hosts` entries in the `docker-compose` [file](docker-compose.yml)). This is hacky but the simplest considered alternative (see commit [57f75b253a](https://github.com/mabevtech/keycloak-poc/commit/57f75b253ac9bd5d802740ebc5ba256cdd76ae6a) for more details).
+We are circumventing this by making the *localhost* address point to the hosts' in the .NET APIs (note the `extra_hosts` entries in the `docker-compose` [file](docker-compose.yml)). This is hacky but the simplest considered alternative (see commit [57f75b253](https://github.com/mabevtech/keycloak-poc/commit/57f75b253ac9bd5d802740ebc5ba256cdd76ae6a) for more details).
 
 ## "GenerateDepsFile" error while building .NET APIs
 
