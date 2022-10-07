@@ -162,6 +162,10 @@ As the *localhost* address is not the same in the host machine and within each c
 
 We are circumventing this by making the *localhost* address point to the hosts' in the .NET APIs (note the `extra_hosts` entries in the `docker-compose` [file](docker-compose.yml)). This is hacky but the simplest considered alternative (see commit [57f75b253a](https://github.com/mabevtech/keycloak-poc/commit/57f75b253ac9bd5d802740ebc5ba256cdd76ae6a) for more details).
 
+## "GenerateDepsFile" error while building .NET APIs
+
+When setting up things for the first time, the .NET APIs images might fail to build with an transient error like [this one](https://github.com/dotnet/sdk/issues/2902). If its happening in your case, halt the script execution and try to execute it some more times, eventually it should succeed.
+
 # Disclaimer
 
 This repository was made for learning purposes, and its usage should be limited to that.
