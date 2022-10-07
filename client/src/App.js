@@ -11,8 +11,23 @@ function Home() {
   const { keycloak } = useKeycloak();
   const apiAuth = useApiAuth();
 
+  const token = apiAuth.token || keycloak.token;
   const isAuthenticated = apiAuth.isAuthenticated || keycloak.authenticated;
   const userName = keycloak.tokenParsed?.preferred_username || "user";
+
+  const viewToken = token => {
+    const buildJWTioUrl = token => {
+      const publicKey = JSON.stringify({
+        "e": "AQAB",
+        "kty": "RSA",
+        "n": "y9JHH-RtP56zUnZ_VSJxVRJTXeClPFLiudVQyKdTgrhOuinS5LvOJsuu_JgRw2WJ8--vF9TRt4Fys9VEN_k6DDrjzET_uBAEJb3fQ8jvWCzDS6BUu7q9Yl2q36Te7n_g9YWvGn41aDVHVlDuHGgpEcGSmylLL25B44Gcb2YMsYPJnIzd60IU5UqKs3VXbnXw7DKigPH7CQQtWKCDs4McJ96bqgnOALNTekBRpFswBwQ3nEIprkY1ZsuKGifVO56RzuW_PvcDTAc12P1zocQakaSpOyTTl5utVWtBnFZXWqoRJXtZTX147An5MVP3FIdUjJQkU-WrotjQni4zuxWYgw"
+      });
+      const baseUrl = "https://jwt.io/#debugger-io";
+      return `${baseUrl}?token=${token}&publicKey=${publicKey}`;
+    }
+    const url = encodeURI(buildJWTioUrl(token));
+    window.open(url, "_blank");
+  }
 
   const logout = async () => {
     if (keycloak.authenticated) {
@@ -43,6 +58,9 @@ function Home() {
         {isAuthenticated && (
           <div>
             <p>Welcome {userName}!</p>
+            <button type="button" onClick={() => viewToken(token)}>
+              View Token
+            </button>
             <button type="button" onClick={logout}>
               Logout
             </button>
