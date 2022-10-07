@@ -24,9 +24,11 @@
 # Make sure we are in project root
 cd $(dirname $0)/..
 
+# Suppress progress meter by default in curl calls
+alias curl="curl --no-progress-meter"
+
 echo ""
-echo "## Getting access token for the admin user"
-echo ""
+echo "Getting access token for the admin user"
 TOKEN=$(
     curl http://localhost:$KEYCLOAK_PORT/realms/master/protocol/openid-connect/token \
          -d "username=${KEYCLOAK_ADMIN}&password=${KEYCLOAK_ADMIN_PASSWORD}&grant_type=password&client_id=admin-cli" |
@@ -36,15 +38,13 @@ TOKEN=$(
      )
 
 echo ""
-echo "## Token:"
-echo ""
+echo "Token:"
 echo $TOKEN
 
 # (1) Create a new realm
 
 echo ""
-echo "## Creating realm" $KEYCLOAK_REALM_NAME
-echo ""
+echo "Creating realm" $KEYCLOAK_REALM_NAME
 curl http://localhost:$KEYCLOAK_PORT/admin/realms \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer $TOKEN" \
@@ -54,8 +54,7 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms \
 
 THEME=$(ls libs/keycloak-themes/theme | head -1)
 echo ""
-echo "## Setting theme" $THEME "in" $KEYCLOAK_REALM_NAME "login page"
-echo ""
+echo "Setting theme" $THEME "in" $KEYCLOAK_REALM_NAME "login page"
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
      -X 'PUT' \
      -H "Content-Type: application/json" \
@@ -65,8 +64,7 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
 # (1.2) Update Content Security Policy of the new realm
 
 echo ""
-echo "## Updating contentSecurityPolicy of" $KEYCLOAK_REALM_NAME
-echo ""
+echo "Updating contentSecurityPolicy of" $KEYCLOAK_REALM_NAME
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
      -X 'PUT' \
      -H "Content-Type: application/json" \
@@ -81,8 +79,7 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME \
 # (2) Create a new user in the new realm
 
 echo ""
-echo "## Creating user" $KEYCLOAK_USER_UNAME "in" $KEYCLOAK_REALM_NAME
-echo ""
+echo "Creating user" $KEYCLOAK_USER_UNAME "in" $KEYCLOAK_REALM_NAME
 curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
      -H "Content-Type: application/json" \
      -H "Authorization: bearer ${TOKEN}" \
@@ -95,8 +92,7 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
 # (2.1) Set a password for the new user
 
 echo ""
-echo "## Setting password" $KEYCLOAK_USER_PWD "for user" $KEYCLOAK_USER_UNAME
-echo ""
+echo "Setting password" $KEYCLOAK_USER_PWD "for user" $KEYCLOAK_USER_UNAME
 # Get the id of the created user (it's the only one in the realm)
 USER_GUID=$(
     curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users \
@@ -116,8 +112,7 @@ curl http://localhost:$KEYCLOAK_PORT/admin/realms/$KEYCLOAK_REALM_NAME/users/$US
 # (3) Register a client in the new realm
 
 echo ""
-echo "## Registering client" $CLIENT_ID "in" $KEYCLOAK_REALM_NAME
-echo ""
+echo "Registering client" $CLIENT_ID "in" $KEYCLOAK_REALM_NAME
 
 # If true, it means the client has a secure back-channel to store secrets.
 # The "serviceAccountsEnabled" option can be set to true then, which
